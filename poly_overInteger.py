@@ -4,6 +4,7 @@ http://www.geocities.jp/m_hiroi/light/numpy06.html
 """
 
 import numpy as np
+from functools import reduce
 
 """
 リスト：多項式の四則演算
@@ -81,4 +82,13 @@ print(polyadd(fx, gx))
 print(polysub(fx, gx))
 print(polymul(fx, gx))
 print(polydiv(fx, gx))
+
+"""
+変数xに値を代入し多項式の値を求める
+"""
+# 多項式の値を求める（ホーナー法）
+def polyval(xs, n):
+    return reduce(lambda x, y: x * n + y, xs)
+print(polyval(fx, 1))
+print(polyval(gx, 3))
 
