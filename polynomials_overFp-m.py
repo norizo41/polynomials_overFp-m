@@ -1,12 +1,12 @@
-#
-# polygf.py : GF(p) で多項式を計算する (p は素数)
-#
-#             Copyright (C) 2018 Makoto Hiroi
-#
+"""
+参考：「お気楽NumPyプログラミング超入門」
+http://www.geocities.jp/m_hiroi/light/numpy06.html
+"""
 import numpy as np
-import functools
-import itertools
 import math
+
+from functools import reduce
+from itertools import product 
 
 """
 拡張ユークリッドの互除法
@@ -96,6 +96,45 @@ class GF:
         if qs == []: qs = [0]
         return np.array(qs), self.normalize(zs)
 
+    #多項式の因数分解
+    def factorization(self, xs):
+        # 変数psのリストに因子を格納
+        ps = []
+        # 係数の最大公約数をgに代入する
+        g = reduce(lambda x, y:math.gcd(x, y), xs)
+        # 1より大きければ、その値でxsを割り算する
+        if g > 1:
+            xs = xs // g #//は切り捨て除算を意味する代数演算子
+            ps.append((np.array([g]), 1))
+        # 除数の最大桁数を求めて変数mにセットします
+        m = (len(xs) - 1) // 2 + 1
+        # product()はリストとリストの直積を求める関数。
+        # repeatを指定すると重複順列を生成することができる。
+        zs = product(range(self.num), repeat=m)
+        for _ in range(self.num):
+            next(zs)
+        for z in zs:
+            ys = np.trim_zeros(np.array(z), 'f')
+            if len(xs) <= len(ys):
+                break
+            c = 0
+            while len(xs) > len(ys):
+                p, q = self.polydiv(xs, ys)
+                if q[0] == 0:
+                    xs = p
+                    c += 1
+                else:
+                    break
+            if c > 0:
+                if np.all(xs == ys):
+                    c += 1
+                    xs = np.array([1])
+                ps.append((ys, c))
+        if len(xs) > 1:
+            ps.append((xs, 1))
+        return ps
+
+
 
 gf3 = GF(3)
 
@@ -106,6 +145,7 @@ print(gf3.polysub(fx, gx))
 print(gf3.polymul(fx, gx))
 p, q = gf3.polydiv(fx, gx)#商と余り
 print(p, q)
+print(gf3.factorization(fx))
 
 fx = np.array([1, 0,  2]) # x^2 - 1 = (x + 1)(x - 1) 
 gx = np.array([1, 1]) # x + 1
@@ -114,3 +154,4 @@ print(gf3.polysub(fx, gx))
 print(gf3.polymul(fx, gx))
 p, q = gf3.polydiv(fx, gx)#商と余り
 print(p, q)
+print(gf3.factorization(fx))
