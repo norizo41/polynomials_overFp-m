@@ -21,10 +21,12 @@ def ext_euclid(a, b):
         q, z = divmod(xs[0], ys[0])
         xs, ys = ys, (z, xs[1] - q * ys[1], xs[2] - q * ys[2])
     return xs
+"""
 print(ext_euclid(24, 6))
 print(ext_euclid(28, 63))
 print(ext_euclid(24, 27))
 print(ext_euclid(-24, 6))
+"""
 
 # 逆数表の生成
 def make_inv(n):
@@ -35,10 +37,13 @@ def make_inv(n):
             raise Exception("not prime number!")
         inv[x] = (y + n) % n
     return inv
+
+"""
 print(make_inv(7))
 print(make_inv(3))
 # print(make_inv(24))
 # "not prime number!"
+"""
 
 """
 GF(p)で多項式を計算する（p：素数）
@@ -134,10 +139,33 @@ class GF:
             ps.append((xs, 1))
         return ps
 
+def specialPoly(gf, fx):
+    print('fx:' + str(fx))
+    param = []
+    for i in range(gf.num):
+        param.append(i)
+    for n0, n1, n2 in product(param, param, param):#この3は本来len(fx)の値に依存
+        gx = np.array([n0, n1, n2])
+        px = gf.polymul(gx, gx)#square
+        print(gf.factorization(gf.polysub(px, fx)))
+    print('\r')
 
 
 gf3 = GF(3)
 
+fx = np.array([0, 0, 1, 2]) 
+specialPoly(gf3, fx)
+
+fx = np.array([1, 1, 2, 2]) 
+specialPoly(gf3, fx)
+
+fx = np.array([2, 0, 2, 1]) 
+specialPoly(gf3, fx)
+
+fx = np.array([1, 0, 2, 2]) 
+specialPoly(gf3, fx)
+
+"""
 fx = np.array([1, 2, 1]) # x^2 + 2 x +1
 gx = np.array([1, 0, 2]) # x^2 + 2
 print(gf3.polyadd(fx, gx))
@@ -155,3 +183,6 @@ print(gf3.polymul(fx, gx))
 p, q = gf3.polydiv(fx, gx)#商と余り
 print(p, q)
 print(gf3.factorization(fx))
+"""
+
+
